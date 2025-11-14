@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寶可夢大亨前後端連線版</title>
+    <!-- 載入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 設定 Tailwind 顏色與字體
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        'poke-blue': '#3B4CCA',
+                        'poke-red': '#CC0000',
+                        'poke-yellow': '#FFDE00',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .status-success {
+            background-color: #d1fae5; /* green-100 */
+            color: #065f46; /* green-800 */
+            border-left: 4px solid #10b981; /* green-500 */
+        }
+        .status-error {
+            background-color: #fee2e2; /* red-100 */
+            color: #991b1b; /* red-800 */
+            border-left: 4px solid #ef4444; /* red-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8 font-sans">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-8 p-4 bg-poke-red text-white rounded-lg shadow-xl">
+            <h1 class="text-4xl font-extrabold tracking-tight">寶可夢大亨 📈</h1>
+            <p class="text-lg mt-1 font-medium">使用 Python (後端) 進行模擬，使用 Web (前端) 進行交易</p>
+            <div id="status-message-container" class="mt-3 p-2 rounded-md font-bold text-sm">
+                <span id="status-message" class="block">請先運行您的 Python (app.py) 伺服器！</span>
+            </div>
+        </header>
+
+        <!-- 狀態與控制面板 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="card bg-white p-6 rounded-xl border-l-4 border-poke-blue col-span-1">
+                <h2 class="text-2xl font-semibold text-gray-700">資金 (Cash)</h2>
+                <p id="cash-display" class="text-4xl font-bold text-green-600 mt-2">$0.00</p>
+            </div>
+            
+            <div class="card bg-white p-6 rounded-xl border-l-4 border-gray-400 col-span-1">
+                <h2 class="text-2xl font-semibold text-gray-700">回合 (Turn)</h2>
+                <p id="turn-display" class="text-4xl font-bold text-gray-600 mt-2">0</p>
+            </div>
+
+            <button id="simulate-button" class="col-span-1 bg-poke-blue text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:bg-poke-blue/90 transition duration-150 transform hover:scale-105 disabled:opacity-50" disabled>
+                <span class="text-xl">運行下一回合市場模擬</span>
+            </button>
+        </div>
+
+        <!-- 市場交易區塊 -->
+        <div id="market-area" class="bg-white p-6 rounded-xl shadow-xl">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 border-b pb-2">今日市場價格與交易</h2>
+            <div id="market-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <p class="text-gray-500 col-span-2">等待後端連線...</p>
+            </div>
+        </div>
+
+        <!-- 庫存區塊 -->
+        <div class="mt-8 bg-white p-6 rounded-xl shadow-xl">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 border-b pb-2">我的庫存 (Inventory)</h2>
+            <div id="inventory-display" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <p class="text-gray-500 col-span-4">等待後端連線...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API 伺服器基礎 URL (必須與 Python app.py 的運行地址一致)
+        const API_BASE_URL = 'http://127.0.0.1:5000/api';
+        const SIMULATE_BUTTON = document.getElementById('simulate-button');
+        const STATUS_CONTAINER = document.getElementById('status-message-container');
+        const STATUS_MESSAGE = document.getElementById('status-message');
+        
+        let retryCount = 0;
+        const MAX_RETRIES = 5;
+
+        // Helper function for UI updates
+        const updateUI = (state, isError = false) => {
+            document.getElementById('cash-display').textContent = `$${state.cash.toFixed(2)}`;
+            document.getElementById('turn-display').textContent = state.turn;
+            
+            // 更新狀態訊息樣式
+            STATUS_CONTAINER.className = 'mt-3 p-2 rounded-md font-bold text-sm';
+            if (isError) {
+                 STATUS_CONTAINER.classList.add('status-error');
+            } else {
+                 STATUS_CONTAINER.classList.add('status-success');
+            }
+            STATUS_MESSAGE.textContent = state.market_message;
+            
+            // 1. 更新市場價格
+            const marketGrid = document.getElementById('market-grid');
+            marketGrid.innerHTML = ''; // 清空舊內容
+            
+            Object.keys(state.prices).forEach(pokemon => {
+                const price = state.prices[pokemon];
+                const card = document.createElement('div');
+                card.className = 'p-4 border rounded-xl bg-gray-50 card';
+                
+                // 檢查是否有足夠庫存來賣出
+                const canSell = state.inventory[pokemon] > 0;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xl font-bold">${pokemon}</span>
+                        <span class="text-2xl font-extrabold text-blue-600">$${price.toFixed(2)}</span>
+                    </div>
+                    <div class="flex gap-2 mt-3">
+                        <input type="number" id="qty-${pokemon}" value="1" min="1" class="w-1/3 p-2 border rounded-md text-center focus:ring-poke-blue focus:border-poke-blue" placeholder="數量">
+                        <button onclick="handleTrade('buy', '${pokemon}')" class="w-1/3 bg-green-500 text-white font-semibold py-2 rounded-md hover:bg-green-600 transition disabled:opacity-50">
+                            買入
+                        </button>
+                        <button onclick="handleTrade('sell', '${pokemon}')" class="w-1/3 bg-red-500 text-white font-semibold py-2 rounded-md hover:bg-red-600 transition ${canSell ? '' : 'disabled:opacity-50'}" ${canSell ? '' : 'disabled'}>
+                            賣出
+                        </button>
+                    </div>
+                `;
+                marketGrid.appendChild(card);
+            });
+
+            // 2. 更新庫存
+            const inventoryDisplay = document.getElementById('inventory-display');
+            inventoryDisplay.innerHTML = '';
+            const inventoryKeys = Object.keys(state.inventory);
+            if (inventoryKeys.length === 0) {
+                 inventoryDisplay.innerHTML = '<p class="text-gray-500 col-span-4">您的寶可夢倉庫是空的！</p>';
+            } else {
+                inventoryKeys.forEach(pokemon => {
+                    const count = state.inventory[pokemon];
+                    const invItem = document.createElement('div');
+                    invItem.className = 'p-3 bg-gray-100 rounded-lg shadow-inner flex flex-col items-center';
+                    invItem.innerHTML = `
+                        <span class="text-sm font-medium text-gray-600">${pokemon}</span>
+                        <span class="text-3xl font-bold text-gray-800">${count} 隻</span>
+                    `;
+                    inventoryDisplay.appendChild(invItem);
+                });
+            }
+        };
+
+        // 核心：與 Python 後端溝通的函數
+        const fetchData = async (endpoint, method = 'GET', data = null) => {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                };
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                SIMULATE_BUTTON.disabled = true;
+                
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                const result = await response.json();
+                
+                // 交易/模擬成功或失敗後，按鈕都應啟用
+                SIMULATE_BUTTON.disabled = false;
+                retryCount = 0; // 成功連線，重置重試計數器
+
+                if (response.ok) {
+                    // 成功狀態
+                    updateUI(result.state || result); 
+                    return result;
+                } else {
+                    // 處理後端返回的錯誤（如資金不足，狀態碼 400）
+                    // 後端會返回 state，我們依然可以更新 UI
+                    updateUI(result.state, true); 
+                    return result;
+                }
+
+            } catch (error) {
+                console.error('API 連線錯誤:', error);
+                SIMULATE_BUTTON.disabled = true;
+                STATUS_CONTAINER.className = 'mt-3 p-2 rounded-md font-bold text-sm status-error';
+                STATUS_MESSAGE.textContent = "⚠️ 連線失敗：請確保您的 Python 伺服器 (app.py) 正在運行！";
+            }
+        };
+
+        // 處理買賣交易
+        const handleTrade = (action, pokemon) => {
+            const qtyInput = document.getElementById(`qty-${pokemon}`);
+            const quantity = parseInt(qtyInput.value, 10);
+            
+            if (quantity <= 0 || isNaN(quantity)) {
+                STATUS_MESSAGE.textContent = "請輸入有效的數量！";
+                STATUS_CONTAINER.className = 'mt-3 p-2 rounded-md font-bold text-sm status-error';
+                return;
+            }
+
+            fetchData('/trade', 'POST', { action, pokemon, quantity });
+        };
+
+        // 處理下一回合模擬按鈕
+        document.getElementById('simulate-button').addEventListener('click', () => {
+            fetchData('/simulate', 'POST');
+        });
+        
+        // --- 連線檢查與重試機制 ---
+        const checkConnection = async () => {
+            try {
+                // 嘗試連線到 /ping 端點
+                STATUS_CONTAINER.className = 'mt-3 p-2 rounded-md font-bold text-sm bg-poke-yellow text-gray-800';
+                STATUS_MESSAGE.textContent = "正在嘗試連線到 Python 伺服器...";
+                
+                const response = await fetch(`${API_BASE_URL}/ping`);
+                
+                if (response.ok) {
+                    STATUS_MESSAGE.textContent = "✅ 連線成功！正在讀取初始狀態...";
+                    SIMULATE_BUTTON.disabled = false;
+                    fetchData('/state'); // 成功後獲取遊戲初始狀態
+                    return;
+                }
+            } catch (error) {
+                // 忽略錯誤，稍後重試
+                console.log(`連線嘗試失敗 (${retryCount + 1}):`, error.message);
+            }
+
+            // 連線失敗，進行重試
+            retryCount++;
+            if (retryCount <= MAX_RETRIES) {
+                // 實作指數退避 (Exponential Backoff) 延遲
+                const delay = Math.pow(2, retryCount) * 500; // 500ms, 1s, 2s, 4s, 8s
+                STATUS_CONTAINER.className = 'mt-3 p-2 rounded-md font-bold text-sm status-error';
+                STATUS_MESSAGE.textContent = `❌ 連線失敗。正在重試 (${retryCount}/${MAX_RETRIES})，請檢查 app.py 是否運行...`;
+                setTimeout(checkConnection, delay);
+            } else {
+                STATUS_CONTAINER.className = 'mt-3 p-2 rounded-md font-bold text-sm status-error';
+                STATUS_MESSAGE.textContent = "⚠️ 連線失敗：已達到最大重試次數。請確認 Python 伺服器運行正常，並重新整理頁面。";
+                SIMULATE_BUTTON.disabled = true;
+            }
+        };
+
+
+        // 應用程式初始化
+        window.onload = () => {
+            checkConnection(); // 啟動連線檢查流程
+        };
+    </script>
+</body>
+</html>

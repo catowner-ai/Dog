@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Trends AI - 專業金融儀表板</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+:root {
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --font-family-base: "Noto Sans TC", "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-base);
+  background: #0c111d;
+  color: #e5e7eb;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.header {
+  background: linear-gradient(135deg, #1a2233 0%, #0c111d 100%);
+  padding: var(--space-20) var(--space-32);
+  border-bottom: 2px solid #38bdf8;
+  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.15);
+}
+
+.header-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+.logo h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn {
+  padding: var(--space-12) var(--space-24);
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: white;
+  border: none;
+  border-radius: var(--radius-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: var(--font-size-base);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: var(--space-24) var(--space-16);
+}
+
+.market-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-20);
+  margin-bottom: var(--space-32);
+}
+
+.market-card {
+  background: #1a2233;
+  padding: var(--space-24);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  transition: all 0.3s ease;
+}
+
+.market-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+}
+
+.market-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-12);
+}
+
+.market-name {
+  font-size: var(--font-size-sm);
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.market-symbol {
+  font-size: var(--font-size-xs);
+  color: #6b7280;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.market-price {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  margin-bottom: var(--space-8);
+}
+
+.market-change {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+}
+
+.positive {
+  color: #22c55e;
+}
+
+.negative {
+  color: #ef4444;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--space-24);
+  margin-bottom: var(--space-32);
+}
+
+.section-card {
+  background: #1a2233;
+  padding: var(--space-24);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  min-height: 500px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-20);
+  padding-bottom: var(--space-16);
+  border-bottom: 2px solid rgba(56, 189, 248, 0.2);
+}
+
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.period-select {
+  padding: var(--space-8) var(--space-12);
+  background: #0c111d;
+  color: #e5e7eb;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.period-select:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  text-align: left;
+  padding: var(--space-12) var(--space-8);
+  font-size: var(--font-size-xs);
+  color: #9ca3af;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.data-table td {
+  padding: var(--space-12) var(--space-8);
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+}
+
+.data-table tr {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.stock-name {
+  font-weight: 600;
+}
+
+.stock-symbol {
+  font-size: var(--font-size-xs);
+  color: #6b7280;
+  display: block;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  background: #0c111d;
+  padding: var(--space-12);
+  border-radius: var(--radius-base);
+  border: 1px solid #38bdf8;
+  font-size: var(--font-size-xs);
+  max-width: 250px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  top: 100%;
+  left: 0;
+  margin-top: var(--space-4);
+}
+
+.data-table tbody tr:hover .tooltip {
+  display: block;
+}
+
+.ai-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.ai-card {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(34, 197, 94, 0.1));
+  padding: var(--space-16);
+  border-radius: var(--radius-base);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  transition: all 0.3s ease;
+}
+
+.ai-card:hover {
+  transform: translateX(5px);
+  border-color: #38bdf8;
+}
+
+.ai-category {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: var(--space-8);
+}
+
+.ai-description {
+  font-size: var(--font-size-sm);
+  color: #d1d5db;
+  margin-bottom: var(--space-12);
+}
+
+.ai-metrics {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-12);
+}
+
+.confidence {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #22c55e;
+}
+
+.metric-text {
+  font-size: var(--font-size-xs);
+  color: #9ca3af;
+}
+
+.news-section {
+  margin-top: var(--space-24);
+}
+
+.news-button {
+  width: 100%;
+  padding: var(--space-12);
+  background: linear-gradient(135deg, #38bdf8, #22c55e);
+  color: white;
+  border: none;
+  border-radius: var(--radius-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: var(--space-16);
+}
+
+.news-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.3);
+}
+
+.news-list {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-12);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.news-list.active {
+  display: flex;
+}
+
+.news-item {
+  background: rgba(56, 189, 248, 0.05);
+  padding: var(--space-16);
+  border-radius: var(--radius-base);
+  border-left: 3px solid #38bdf8;
+  transition: all 0.3s ease;
+}
+
+.news-item:hover {
+  background: rgba(56, 189, 248, 0.1);
+  transform: translateX(5px);
+}
+
+.news-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: var(--space-6);
+}
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: #9ca3af;
+}
+
+.chart-section {
+  background: #1a2233;
+  padding: var(--space-32);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  margin-top: var(--space-32);
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-24);
+  flex-wrap: wrap;
+  gap: var(--space-16);
+}
+
+.chart-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.control-group {
+  display: flex;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+}
+
+.chart-select {
+  padding: var(--space-10) var(--space-16);
+  background: #0c111d;
+  color: #e5e7eb;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chart-select:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.chart-container {
+  position: relative;
+  height: 500px;
+  background: rgba(12, 17, 29, 0.5);
+  padding: var(--space-20);
+  border-radius: var(--radius-base);
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .market-overview {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .control-group {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+  .main-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0c111d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #38bdf8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #22c55e;
+}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <h1>Market Trends AI</h1>
+            </div>
+            <button class="btn" onclick="exportCSV()">下載完整數據 (CSV)</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Market Overview -->
+        <section class="market-overview" id="marketOverview"></section>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Column: TW & US Stocks -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">台美熱門股票</h2>
+                    <select class="period-select" onchange="handlePeriodChange('stocks', this.value)">
+                        <option value="daily">每日</option>
+                        <option value="weekly">每週</option>
+                        <option value="monthly">每月</option>
+                        <option value="m3">3個月</option>
+                        <option value="m6">6個月</option>
+                        <option value="y1">1年</option>
+                    </select>
+                </div>
+                <div id="stocksContent"></div>
+            </div>
+
+            <!-- Middle Column: ETFs & Crypto -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">熱門ETF與加密貨幣</h2>
+                    <select class="period-select" onchange="handlePeriodChange('etf-crypto', this.value)">
+                        <option value="daily">每日</option>
+                        <option value="weekly">每週</option>
+                        <option value="monthly">每月</option>
+                        <option value="m3">3個月</option>
+                        <option value="m6">6個月</option>
+                        <option value="y1">1年</option>
+                    </select>
+                </div>
+                <div id="etfCryptoContent"></div>
+            </div>
+
+            <!-- Right Column: AI Analysis & News -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">AI智慧分析</h2>
+                </div>
+                <div class="ai-analysis" id="aiAnalysis"></div>
+                
+                <div class="news-section">
+                    <button class="news-button" onclick="fetchNews()">獲取即時新聞</button>
+                    <div class="news-list" id="newsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <section class="chart-section">
+            <div class="chart-controls">
+                <h2 class="chart-title">數據可視化分析</h2>
+                <div class="control-group">
+                    <select class="chart-select" id="dataSourceSelect" onchange="updateChart()">
+                        <option value="all">所有市場</option>
+                        <option value="tw">僅台股</option>
+                        <option value="us">僅美股</option>
+                        <option value="etf">僅ETF</option>
+                        <option value="crypto">僅加密貨幣</option>
+                    </select>
+                    <select class="chart-select" id="chartTypeSelect" onchange="updateChart()">
+                        <option value="volume">成交量（長條圖）</option>
+                        <option value="pie">市場佔比（圓餅圖）</option>
+                        <option value="line">價格趨勢（折線圖）</option>
+                        <option value="bubble">動能氣泡圖</option>
+                        <option value="scatter">價格與成交量（散點圖）</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <script>
+// Mock Data
+const mockData = {
+  marketOverview: [
+    { name: '台灣加權指數', symbol: 'TAIEX', price: 23205.80, change: 110.25, changePercent: 0.48 },
+    { name: 'S&P 500', symbol: 'SPX', price: 5473.30, change: -13.80, changePercent: -0.25 },
+    { name: 'NASDAQ', symbol: 'CCMP', price: 17710.50, change: 28.50, changePercent: 0.16 },
+    { name: 'Bitcoin (USD)', symbol: 'BTC', price: 68120.00, change: 1320.10, changePercent: 1.98 }
+  ],
+  twStocks: {
+    daily: [
+      { name: '台積電', symbol: '2330.TW', price: 950, change: 15, changePercent: 1.60, volume: 80000000, desc: '全球晶圓代工龍頭，AI晶片需求持續強勁' },
+      { name: '鴻海', symbol: '2317.TW', price: 205, change: 8, changePercent: 4.00, volume: 150000000, desc: '代工龍頭，蘋果供應鏈核心' },
+      { name: '聯發科', symbol: '2454.TW', price: 1350, change: -20, changePercent: -1.46, volume: 12000000, desc: '手機晶片設計，5G領先' },
+      { name: '長榮', symbol: '2603.TW', price: 210, change: 5, changePercent: 2.40, volume: 95000000, desc: '海運龍頭，運價持續強勁' },
+      { name: '廣達', symbol: '2382.TW', price: 290, change: 12, changePercent: 4.30, volume: 60000000, desc: 'AI伺服器代工廠，需求強勁' }
+    ],
+    weekly: [
+      { name: '台積電', symbol: '2330.TW', price: 950, change: 45, changePercent: 5.00, volume: 400000000, desc: '全球晶圓代工龍頭，AI晶片需求持續強勁' },
+      { name: '聯電', symbol: '2303.TW', price: 52, change: 3, changePercent: 6.12, volume: 250000000, desc: '晶圓代工第二大廠' },
+      { name: '鴻海', symbol: '2317.TW', price: 205, change: 18, changePercent: 9.60, volume: 750000000, desc: '代工龍頭，蘋果供應鏈核心' }
+    ],
+    monthly: [
+      { name: '台積電', symbol: '2330.TW', price: 950, change: 85, changePercent: 9.83, volume: 1600000000, desc: '全球晶圓代工龍頭，AI晶片需求持續強勁' },
+      { name: '廣達', symbol: '2382.TW', price: 290, change: 38, changePercent: 15.08, volume: 400000000, desc: 'AI伺服器代工廠，需求強勁' }
+    ],
+    m3: [
+      { name: '台積電', symbol: '2330.TW', price: 950, change: 180, changePercent: 23.38, volume: 5000000000, desc: '全球晶圓代工龍頭，AI晶片需求持續強勁' },
+      { name: '廣達', symbol: '2382.TW', price: 290, change: 95, changePercent: 48.72, volume: 1300000000, desc: 'AI伺服器代工廠，需求強勁' }
+    ],
+    m6: [
+      { name: '台積電', symbol: '2330.TW', price: 950, change: 250, changePercent: 35.71, volume: 10000000000, desc: '全球晶圓代工龍頭，AI晶片需求持續強勁' },
+      { name: '廣達', symbol: '2382.TW', price: 290, change: 140, changePercent: 93.33, volume: 2800000000, desc: 'AI伺服器代工廠，需求強勁' }
+    ],
+    y1: [
+      { name: '台積電', symbol: '2330.TW', price: 950, change: 380, changePercent: 66.67, volume: 20000000000, desc: '全球晶圓代工龍頭，AI晶片需求持續強勁' },
+      { name: '廣達', symbol: '2382.TW', price: 290, change: 195, changePercent: 205.26, volume: 6000000000, desc: 'AI伺服器代工廠，需求強勁' }
+    ]
+  },
+  usStocks: {
+    daily: [
+      { name: 'NVIDIA', symbol: 'NVDA', price: 135.58, change: 4.5, changePercent: 3.40, volume: 60000000, desc: 'AI晶片龍頭，市值突破2兆' },
+      { name: 'Apple', symbol: 'AAPL', price: 214.29, change: -1.8, changePercent: -0.80, volume: 45000000, desc: '科技巨頭，新品發佈在即' },
+      { name: 'Microsoft', symbol: 'MSFT', price: 449.78, change: 2.1, changePercent: 0.47, volume: 20000000, desc: '雲計算領導者，AI投資持續' },
+      { name: 'Tesla', symbol: 'TSLA', price: 183.01, change: 5.7, changePercent: 3.20, volume: 90000000, desc: '電動車龍頭，新車型預期' },
+      { name: 'Amazon', symbol: 'AMZN', price: 189.08, change: 3.2, changePercent: 1.70, volume: 35000000, desc: '雲服務與電商龍頭' }
+    ],
+    weekly: [
+      { name: 'NVIDIA', symbol: 'NVDA', price: 135.58, change: 15.2, changePercent: 12.62, volume: 300000000, desc: 'AI晶片龍頭，市值突破2兆' },
+      { name: 'Tesla', symbol: 'TSLA', price: 183.01, change: 22.5, changePercent: 14.02, volume: 450000000, desc: '電動車龍頭，新車型預期' },
+      { name: 'Meta', symbol: 'META', price: 485.20, change: 35.8, changePercent: 7.96, volume: 150000000, desc: '社交媒體龍頭，AI轉型' }
+    ],
+    monthly: [
+      { name: 'NVIDIA', symbol: 'NVDA', price: 135.58, change: 28.5, changePercent: 26.61, volume: 1200000000, desc: 'AI晶片龍頭，市值突破2兆' },
+      { name: 'Tesla', symbol: 'TSLA', price: 183.01, change: 45.3, changePercent: 32.89, volume: 1800000000, desc: '電動車龍頭，新車型預期' }
+    ],
+    m3: [
+      { name: 'NVIDIA', symbol: 'NVDA', price: 135.58, change: 55.8, changePercent: 69.94, volume: 3600000000, desc: 'AI晶片龍頭，市值突破2兆' },
+      { name: 'Meta', symbol: 'META', price: 485.20, change: 125.5, changePercent: 34.89, volume: 800000000, desc: '社交媒體龍頭，AI轉型' }
+    ],
+    m6: [
+      { name: 'NVIDIA', symbol: 'NVDA', price: 135.58, change: 75.2, changePercent: 124.54, volume: 7200000000, desc: 'AI晶片龍頭，市值突破2兆' },
+      { name: 'Amazon', symbol: 'AMZN', price: 189.08, change: 45.8, changePercent: 31.97, volume: 2500000000, desc: '雲服務與電商龍頭' }
+    ],
+    y1: [
+      { name: 'NVIDIA', symbol: 'NVDA', price: 135.58, change: 95.3, changePercent: 236.54, volume: 14400000000, desc: 'AI晶片龍頭，市值突破2兆' },
+      { name: 'Meta', symbol: 'META', price: 485.20, change: 285.5, changePercent: 142.96, volume: 3200000000, desc: '社交媒體龍頭，AI轉型' }
+    ]
+  },
+  etfs: {
+    daily: [
+      { name: '元大台灣50', symbol: '0050.TW', price: 170.5, change: 1.2, changePercent: 0.70, volume: 25000000, desc: '台灣藍籌龍頭基金' },
+      { name: '元大高股息', symbol: '0056.TW', price: 40.2, change: 0.3, changePercent: 0.75, volume: 80000000, desc: '高股息策略，收益率穩定' },
+      { name: 'SPDR S&P 500', symbol: 'SPY', price: 548.5, change: 1.5, changePercent: 0.27, volume: 40000000, desc: '美股500家大型公司' },
+      { name: 'Invesco QQQ Trust', symbol: 'QQQ', price: 481.2, change: 2.1, changePercent: 0.44, volume: 30000000, desc: '納指100科技龍頭' },
+      { name: '國泰永續高股息', symbol: '00878.TW', price: 23.5, change: 0.2, changePercent: 0.85, volume: 120000000, desc: 'ESG高股息配置' }
+    ],
+    weekly: [
+      { name: '元大台灣50', symbol: '0050.TW', price: 170.5, change: 3.8, changePercent: 2.28, volume: 125000000, desc: '台灣藍籌龍頭基金' },
+      { name: 'SPDR S&P 500', symbol: 'SPY', price: 548.5, change: 8.2, changePercent: 1.52, volume: 200000000, desc: '美股500家大型公司' },
+      { name: 'Invesco QQQ Trust', symbol: 'QQQ', price: 481.2, change: 12.5, changePercent: 2.67, volume: 150000000, desc: '納指100科技龍頭' }
+    ],
+    monthly: [
+      { name: 'Invesco QQQ Trust', symbol: 'QQQ', price: 481.2, change: 28.5, changePercent: 6.30, volume: 600000000, desc: '納指100科技龍頭' },
+      { name: '元大台灣50', symbol: '0050.TW', price: 170.5, change: 12.8, changePercent: 8.12, volume: 500000000, desc: '台灣藍籌龍頭基金' }
+    ],
+    m3: [
+      { name: 'Invesco QQQ Trust', symbol: 'QQQ', price: 481.2, change: 65.5, changePercent: 15.76, volume: 1800000000, desc: '納指100科技龍頭' },
+      { name: 'SPDR S&P 500', symbol: 'SPY', price: 548.5, change: 55.2, changePercent: 11.19, volume: 1200000000, desc: '美股500家大型公司' }
+    ],
+    m6: [
+      { name: 'Invesco QQQ Trust', symbol: 'QQQ', price: 481.2, change: 95.8, changePercent: 24.87, volume: 3600000000, desc: '納指100科技龍頭' },
+      { name: '元大台灣50', symbol: '0050.TW', price: 170.5, change: 38.5, changePercent: 29.17, volume: 2000000000, desc: '台灣藍籌龍頭基金' }
+    ],
+    y1: [
+      { name: 'Invesco QQQ Trust', symbol: 'QQQ', price: 481.2, change: 145.5, changePercent: 43.34, volume: 7200000000, desc: '納指100科技龍頭' },
+      { name: '元大台灣50', symbol: '0050.TW', price: 170.5, change: 65.2, changePercent: 61.90, volume: 4000000000, desc: '台灣藍籌龍頭基金' }
+    ]
+  },
+  crypto: {
+    daily: [
+      { name: 'Bitcoin', symbol: 'BTC', price: 68000, change: 1200, changePercent: 1.80, volume: 30000000000, desc: '數字黃金，機構認可度提升' },
+      { name: 'Ethereum', symbol: 'ETH', price: 3600, change: 150, changePercent: 4.30, volume: 18000000000, desc: '智能合約平台，DeFi生態活躍' },
+      { name: 'Solana', symbol: 'SOL', price: 170, change: -8, changePercent: -4.50, volume: 3000000000, desc: '高速區塊鏈，生態擴展' },
+      { name: 'Dogecoin', symbol: 'DOGE', price: 0.16, change: 0.02, changePercent: 14.20, volume: 2000000000, desc: '社群幣種，市場情緒強' },
+      { name: 'Toncoin', symbol: 'TON', price: 7.5, change: 0.5, changePercent: 7.10, volume: 400000000, desc: 'Telegram官方幣，生態活躍' }
+    ],
+    weekly: [
+      { name: 'Bitcoin', symbol: 'BTC', price: 68000, change: 3500, changePercent: 5.43, volume: 150000000000, desc: '數字黃金，機構認可度提升' },
+      { name: 'Ethereum', symbol: 'ETH', price: 3600, change: 420, changePercent: 13.21, volume: 90000000000, desc: '智能合約平台，DeFi生態活躍' },
+      { name: 'Dogecoin', symbol: 'DOGE', price: 0.16, change: 0.045, changePercent: 39.13, volume: 10000000000, desc: '社群幣種，市場情緒強' }
+    ],
+    monthly: [
+      { name: 'Bitcoin', symbol: 'BTC', price: 68000, change: 8500, changePercent: 14.29, volume: 600000000000, desc: '數字黃金，機構認可度提升' },
+      { name: 'Ethereum', symbol: 'ETH', price: 3600, change: 850, changePercent: 30.91, volume: 360000000000, desc: '智能合約平台，DeFi生態活躍' },
+      { name: 'Toncoin', symbol: 'TON', price: 7.5, change: 2.8, changePercent: 59.57, volume: 8000000000, desc: 'Telegram官方幣，生態活躍' }
+    ],
+    m3: [
+      { name: 'Bitcoin', symbol: 'BTC', price: 68000, change: 18500, changePercent: 37.37, volume: 1800000000000, desc: '數字黃金，機構認可度提升' },
+      { name: 'Ethereum', symbol: 'ETH', price: 3600, change: 1350, changePercent: 60.00, volume: 1080000000000, desc: '智能合約平台，DeFi生態活躍' }
+    ],
+    m6: [
+      { name: 'Bitcoin', symbol: 'BTC', price: 68000, change: 28500, changePercent: 72.15, volume: 3600000000000, desc: '數字黃金，機構認可度提升' },
+      { name: 'Solana', symbol: 'SOL', price: 170, change: 95, changePercent: 126.67, volume: 90000000000, desc: '高速區塊鏈，生態擴展' }
+    ],
+    y1: [
+      { name: 'Bitcoin', symbol: 'BTC', price: 68000, change: 45500, changePercent: 202.22, volume: 7200000000000, desc: '數字黃金，機構認可度提升' },
+      { name: 'Solana', symbol: 'SOL', price: 170, change: 145, changePercent: 580.00, volume: 180000000000, desc: '高速區塊鏈，生態擴展' }
+    ]
+  },
+  aiAnalysis: [
+    { category: '「強勢買進」', description: '台積電、NVIDIA等AI相關企業持續領跑', confidence: 92, metric: 'AI晶片需求強勁，市場佔有率擴大' },
+    { category: '「趨勢轉向」', description: '金融股開始上漲，中信金、富邦金表現活躍', confidence: 78, metric: '利率政策轉變，銀行利差擴大' },
+    { category: '「風險提示」', description: '高股息ETF持續獲利了結', confidence: 85, metric: '資金面轉弱，成交量下滑' },
+    { category: '「機會板塊」', description: '綠能與ESG概念股蓄勢待發', confidence: 72, metric: '政策支持力度加大，長期向上' }
+  ],
+  news: [
+    { title: 'NVIDIA財報超預期，AI晶片需求持續強勁', source: '路透社', time: '1小時前' },
+    { title: '美國CPI數據低於預期，市場預期聯準會降息機率大增', source: '彭博社', time: '2小時前' },
+    { title: '台股創新高，台積電領軍漲勢不停', source: '鉅亨網', time: '3小時前' },
+    { title: '特斯拉預告新車型，電動車概念股齊漲', source: '財經M平方', time: '5小時前' },
+    { title: 'ETF資金流向：科技股連續三週淨流入，高股息ETF遭獲利了結', source: '鉅亨網', time: '8小時前' }
+  ]
+};
+
+let currentChart = null;
+let currentPeriod = { stocks: 'daily', 'etf-crypto': 'daily' };
+
+// Initialize App
+function init() {
+  renderMarketOverview();
+  renderStocks('daily');
+  renderETFCrypto('daily');
+  renderAIAnalysis();
+  updateChart();
+}
+
+// Render Market Overview
+function renderMarketOverview() {
+  const container = document.getElementById('marketOverview');
+  container.innerHTML = mockData.marketOverview.map(market => `
+    <div class="market-card">
+      <div class="market-card-header">
+        <span class="market-name">${market.name}</span>
+        <span class="market-symbol">${market.symbol}</span>
+      </div>
+      <div class="market-price">${formatPrice(market.price, market.symbol)}</div>
+      <div class="market-change ${market.change >= 0 ? 'positive' : 'negative'}">
+        ${market.change >= 0 ? '▲' : '▼'} ${Math.abs(market.change).toFixed(2)} (${Math.abs(market.changePercent).toFixed(2)}%)
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render Stocks
+function renderStocks(period) {
+  const twStocks = mockData.twStocks[period] || mockData.twStocks.daily;
+  const usStocks = mockData.usStocks[period] || mockData.usStocks.daily;
+  
+  const container = document.getElementById('stocksContent');
+  container.innerHTML = `
+    <h3 style="color: #38bdf8; margin-bottom: 12px; font-size: 16px;">台股</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>名稱</th>
+          <th>價格</th>
+          <th>漲跌</th>
+          <th>成交量</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${twStocks.map((stock, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>
+              <span class="stock-name">${stock.name}</span>
+              <span class="stock-symbol">${stock.symbol}</span>
+              <div class="tooltip">${stock.desc}</div>
+            </td>
+            <td>$${stock.price}</td>
+            <td class="${stock.change >= 0 ? 'positive' : 'negative'}">
+              ${stock.change >= 0 ? '▲' : '▼'} ${Math.abs(stock.changePercent).toFixed(2)}%
+            </td>
+            <td>${formatVolume(stock.volume)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    
+    <h3 style="color: #38bdf8; margin: 24px 0 12px; font-size: 16px;">美股</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>名稱</th>
+          <th>價格</th>
+          <th>漲跌</th>
+          <th>成交量</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${usStocks.map((stock, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>
+              <span class="stock-name">${stock.name}</span>
+              <span class="stock-symbol">${stock.symbol}</span>
+              <div class="tooltip">${stock.desc}</div>
+            </td>
+            <td>$${stock.price.toFixed(2)}</td>
+            <td class="${stock.change >= 0 ? 'positive' : 'negative'}">
+              ${stock.change >= 0 ? '▲' : '▼'} ${Math.abs(stock.changePercent).toFixed(2)}%
+            </td>
+            <td>${formatVolume(stock.volume)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// Render ETF & Crypto
+function renderETFCrypto(period) {
+  const etfs = mockData.etfs[period] || mockData.etfs.daily;
+  const crypto = mockData.crypto[period] || mockData.crypto.daily;
+  
+  const container = document.getElementById('etfCryptoContent');
+  container.innerHTML = `
+    <h3 style="color: #38bdf8; margin-bottom: 12px; font-size: 16px;">熱門ETF</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>名稱</th>
+          <th>價格</th>
+          <th>漲跌</th>
+          <th>成交量</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${etfs.map((etf, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>
+              <span class="stock-name">${etf.name}</span>
+              <span class="stock-symbol">${etf.symbol}</span>
+              <div class="tooltip">${etf.desc}</div>
+            </td>
+            <td>$${etf.price.toFixed(2)}</td>
+            <td class="${etf.change >= 0 ? 'positive' : 'negative'}">
+              ${etf.change >= 0 ? '▲' : '▼'} ${Math.abs(etf.changePercent).toFixed(2)}%
+            </td>
+            <td>${formatVolume(etf.volume)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    
+    <h3 style="color: #38bdf8; margin: 24px 0 12px; font-size: 16px;">加密貨幣</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>名稱</th>
+          <th>價格</th>
+          <th>漲跌</th>
+          <th>成交量</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${crypto.map((coin, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>
+              <span class="stock-name">${coin.name}</span>
+              <span class="stock-symbol">${coin.symbol}</span>
+              <div class="tooltip">${coin.desc}</div>
+            </td>
+            <td>$${coin.price >= 1 ? coin.price.toFixed(2) : coin.price.toFixed(4)}</td>
+            <td class="${coin.change >= 0 ? 'positive' : 'negative'}">
+              ${coin.change >= 0 ? '▲' : '▼'} ${Math.abs(coin.changePercent).toFixed(2)}%
+            </td>
+            <td>${formatVolume(coin.volume)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// Render AI Analysis
+function renderAIAnalysis() {
+  const container = document.getElementById('aiAnalysis');
+  container.innerHTML = mockData.aiAnalysis.map(analysis => `
+    <div class="ai-card">
+      <div class="ai-category">${analysis.category}</div>
+      <div class="ai-description">${analysis.description}</div>
+      <div class="ai-metrics">
+        <span class="confidence">置信度: ${analysis.confidence}%</span>
+      </div>
+      <div class="metric-text" style="margin-top: 8px;">${analysis.metric}</div>
+    </div>
+  `).join('');
+}
+
+// Fetch News
+function fetchNews() {
+  const newsList = document.getElementById('newsList');
+  newsList.classList.add('active');
+  
+  newsList.innerHTML = mockData.news.map(news => `
+    <div class="news-item">
+      <div class="news-title">${news.title}</div>
+      <div class="news-meta">
+        <span>${news.source}</span>
+        <span>${news.time}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Handle Period Change
+function handlePeriodChange(section, period) {
+  currentPeriod[section] = period;
+  if (section === 'stocks') {
+    renderStocks(period);
+  } else if (section === 'etf-crypto') {
+    renderETFCrypto(period);
+  }
+  updateChart();
+}
+
+// Update Chart
+function updateChart() {
+  const dataSource = document.getElementById('dataSourceSelect').value;
+  const chartType = document.getElementById('chartTypeSelect').value;
+  
+  let data = [];
+  const period = currentPeriod['stocks'];
+  
+  if (dataSource === 'all' || dataSource === 'tw') {
+    data = [...data, ...(mockData.twStocks[period] || mockData.twStocks.daily)];
+  }
+  if (dataSource === 'all' || dataSource === 'us') {
+    data = [...data, ...(mockData.usStocks[period] || mockData.usStocks.daily)];
+  }
+  if (dataSource === 'all' || dataSource === 'etf') {
+    data = [...data, ...(mockData.etfs[period] || mockData.etfs.daily)];
+  }
+  if (dataSource === 'all' || dataSource === 'crypto') {
+    data = [...data, ...(mockData.crypto[period] || mockData.crypto.daily)];
+  }
+  
+  renderChart(data, chartType);
+}
+
+// Render Chart
+function renderChart(data, type) {
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  
+  if (currentChart) {
+    currentChart.destroy();
+  }
+  
+  const labels = data.map(item => item.name);
+  const colors = ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F', '#DB4545', '#D2BA4C', '#964325', '#944454', '#13343B'];
+  
+  let chartConfig = {};
+  
+  switch(type) {
+    case 'volume':
+      chartConfig = {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '成交量',
+            data: data.map(item => item.volume),
+            backgroundColor: colors,
+            borderColor: colors.map(c => c + 'CC'),
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { color: '#e5e7eb' } },
+            title: { display: true, text: '成交量分析', color: '#38bdf8', font: { size: 18 } }
+          },
+          scales: {
+            y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } },
+            x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } }
+          }
+        }
+      };
+      break;
+      
+    case 'pie':
+      chartConfig = {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '市場佔比',
+            data: data.map(item => item.volume),
+            backgroundColor: colors,
+            borderColor: '#1a2233',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, position: 'right', labels: { color: '#e5e7eb' } },
+            title: { display: true, text: '市場佔比分析', color: '#38bdf8', font: { size: 18 } }
+          }
+        }
+      };
+      break;
+      
+    case 'line':
+      chartConfig = {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '價格趨勢',
+            data: data.map(item => item.price),
+            borderColor: '#38bdf8',
+            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { color: '#e5e7eb' } },
+            title: { display: true, text: '價格趨勢分析', color: '#38bdf8', font: { size: 18 } }
+          },
+          scales: {
+            y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } },
+            x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } }
+          }
+        }
+      };
+      break;
+      
+    case 'bubble':
+      chartConfig = {
+        type: 'bubble',
+        data: {
+          datasets: data.map((item, index) => ({
+            label: item.name,
+            data: [{
+              x: item.changePercent,
+              y: item.volume / 1000000,
+              r: Math.abs(item.change) * 3
+            }],
+            backgroundColor: colors[index % colors.length] + '80'
+          }))
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { color: '#e5e7eb' } },
+            title: { display: true, text: '動能氣泡圖', color: '#38bdf8', font: { size: 18 } }
+          },
+          scales: {
+            y: { title: { display: true, text: '成交量 (百萬)', color: '#9ca3af' }, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } },
+            x: { title: { display: true, text: '漲跌幅 (%)', color: '#9ca3af' }, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } }
+          }
+        }
+      };
+      break;
+      
+    case 'scatter':
+      chartConfig = {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: '價格與成交量關係',
+            data: data.map(item => ({ x: item.price, y: item.volume / 1000000 })),
+            backgroundColor: colors[0] + '80',
+            borderColor: colors[0],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { color: '#e5e7eb' } },
+            title: { display: true, text: '價格與成交量散點圖', color: '#38bdf8', font: { size: 18 } }
+          },
+          scales: {
+            y: { title: { display: true, text: '成交量 (百萬)', color: '#9ca3af' }, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } },
+            x: { title: { display: true, text: '價格', color: '#9ca3af' }, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(56, 189, 248, 0.1)' } }
+          }
+        }
+      };
+      break;
+  }
+  
+  currentChart = new Chart(ctx, chartConfig);
+}
+
+// Export CSV
+function exportCSV() {
+  let csv = 'Category,Name,Symbol,Price,Change,Change%,Volume,Description\n';
+  
+  const period = currentPeriod['stocks'];
+  
+  // TW Stocks
+  (mockData.twStocks[period] || mockData.twStocks.daily).forEach(stock => {
+    csv += `TW Stock,${stock.name},${stock.symbol},${stock.price},${stock.change},${stock.changePercent},${stock.volume},"${stock.desc}"\n`;
+  });
+  
+  // US Stocks
+  (mockData.usStocks[period] || mockData.usStocks.daily).forEach(stock => {
+    csv += `US Stock,${stock.name},${stock.symbol},${stock.price},${stock.change},${stock.changePercent},${stock.volume},"${stock.desc}"\n`;
+  });
+  
+  // ETFs
+  (mockData.etfs[period] || mockData.etfs.daily).forEach(etf => {
+    csv += `ETF,${etf.name},${etf.symbol},${etf.price},${etf.change},${etf.changePercent},${etf.volume},"${etf.desc}"\n`;
+  });
+  
+  // Crypto
+  (mockData.crypto[period] || mockData.crypto.daily).forEach(coin => {
+    csv += `Crypto,${coin.name},${coin.symbol},${coin.price},${coin.change},${coin.changePercent},${coin.volume},"${coin.desc}"\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'market_data.csv';
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
+// Utility Functions
+function formatVolume(volume) {
+  if (volume >= 1000000000) {
+    return (volume / 1000000000).toFixed(2) + 'B';
+  } else if (volume >= 1000000) {
+    return (volume / 1000000).toFixed(2) + 'M';
+  } else if (volume >= 1000) {
+    return (volume / 1000).toFixed(2) + 'K';
+  }
+  return volume.toString();
+}
+
+function formatPrice(price, symbol) {
+  if (symbol === 'BTC') {
+    return '$' + price.toFixed(2);
+  }
+  return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Initialize on load
+window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
